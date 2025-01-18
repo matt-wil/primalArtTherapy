@@ -17,7 +17,7 @@ colors = {
 class NewClientDialog(QDialog):
     def __init__(self, database_manager, parent=None):
         super().__init__(parent)
-        self.setWindownTitle("Add New Client")
+        self.setWindowTitle("Add New Client")
         self.database_manager = database_manager
         self.init_ui()
 
@@ -81,6 +81,9 @@ class MainWindow(QMainWindow):
         # Start button
         self._start_button(layout)
 
+        # Add client button
+        self._add_client_button(layout)
+
     def _heading_label(self, layout):
         # Heading Label
         label = QLabel("Primal Art Therapy \nDatabase Manager", self)
@@ -106,6 +109,7 @@ class MainWindow(QMainWindow):
 
     def _button_on_click(self):
         QMessageBox.information(self, "Button Clicked", "Database initialized and ready!")
+        self.button.setText("Database Initialized")
 
     def _open_new_client_dialog(self):
         dialog = NewClientDialog(self.database_manager, self)
