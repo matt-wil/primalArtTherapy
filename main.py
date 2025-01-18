@@ -116,8 +116,10 @@ class MainWindow(QMainWindow):
 
         # db connection status
         if self.db_connected:
+            self.statusBar().setStyleSheet("color: green; font-style: italic;")
             self.statusBar().showMessage("Connected to Database")
         else:
+            self.statusBar().setStyleSheet("color: red; font-style: italic;")
             self.statusBar().showMessage("Failed to Connect to Database")
 
         # Start button
