@@ -1,6 +1,8 @@
 import sys
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QLabel, QWidget, QVBoxLayout, QPushButton, QMessageBox, QDialog, QFormLayout, QLineEdit, QDialogButtonBox, QTableWidget,QTableWidgetItem
+    QApplication, QMainWindow, QLabel, QWidget, QVBoxLayout, QPushButton,
+    QMessageBox, QDialog, QFormLayout, QLineEdit, QDialogButtonBox,
+    QTableWidget, QTableWidgetItem
 )
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt
@@ -12,6 +14,24 @@ colors = {
     "Gold": "#EEA83B",
     "Tan": "#CA763B"
 }
+
+
+class SearchClientDialog(QDialog):
+    # search via client name, email, address
+    def __init__(self, database_manager, parent=None):
+        super().__init__()
+        self.setWindowTitle("Search Clients")
+        self.database_manager = database_manager
+        self.init_ui()
+
+
+class DeleteClientDialog(QDialog):
+    # requires a secret password to delete
+    def __init__(self, database_manager, parent=None):
+        super().__init__()
+        self.setWindowTitle("Delete Client")
+        self.database_manager = database_manager
+        self.init_ui()
 
 
 class NewClientDialog(QDialog):
@@ -116,10 +136,10 @@ class MainWindow(QMainWindow):
 
         # db connection status
         if self.db_connected:
-            self.statusBar().setStyleSheet("color: green; font-style: italic;")
+            self.statusBar().setStyleSheet("color: #00ff00; font-style: italic;")
             self.statusBar().showMessage("Connected to Database")
         else:
-            self.statusBar().setStyleSheet("color: red; font-style: italic;")
+            self.statusBar().setStyleSheet("color: #ff0000; font-style: italic;")
             self.statusBar().showMessage("Failed to Connect to Database")
 
         # Start button
