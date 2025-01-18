@@ -1,0 +1,52 @@
+# Byte-compiled / optimized / DLL files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+.eggs
+*.egg-info
+dist/
+build/
+develop/
+pip-wheel/
+.tox/
+htmlcov/
+.coverage
+.coverage.*
+.cache/pip/
+
+# PyInstaller
+*.spec
+build/
+dist/
+
+# Unit test/coverage reports
+.pytest_cache/
+coverage.xml
+
+# Django session files
+*.session-id
+
+# Local configuration files
+*.local
+*.env
+.env.*
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Jupyter Notebook files
+.ipynb_checkpoints
+
+# Miscellaneous
+*.log
+*.pid
+*.sock
+*~
