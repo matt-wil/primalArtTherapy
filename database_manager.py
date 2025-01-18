@@ -11,6 +11,9 @@ class Client(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)
+    # phone_number = Column(Integer, unique=True, nullable=False)
+    # address = Column(String, unique=True, nullable=False)
+    # notes = Column(String, nullable=True)
 
 
 class DatabaseManager:
@@ -43,8 +46,14 @@ class DatabaseManager:
     def update_client(self):
         pass
 
-    def retrieve_client(self):
+    def get_client(self):
         pass
 
-    def retrieve_all_clients(self):
-        pass
+    def get_all_clients(self):
+        session = self.Session()
+        try:
+            return session.query(Client).all()
+        except Exception as e:
+            raise RuntimeError(f"Failed to fetch clients: {e}")
+        finally:
+            session.close()

@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QLabel, QWidget, QVBoxLayout, QPushButton, QMessageBox, QDialog, QFormLayout, QLineEdit, QDialogButtonBox
+    QApplication, QMainWindow, QLabel, QWidget, QVBoxLayout, QPushButton, QMessageBox, QDialog, QFormLayout, QLineEdit, QDialogButtonBox, QTableWidget,QTableWidgetItem
 )
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt
@@ -51,6 +51,36 @@ class NewClientDialog(QDialog):
             QMessageBox.critical(self, "Error", str(e))
 
 
+class ViewClientsDialog(QDialog):
+    def __init__(self, database_manager, parent=None):
+        super().__init__()
+        self.setWindowTitle("View Clients")
+        self.database_manager = database_manager
+        self.init_ui()
+
+    def init_ui(self):
+        layout = QVBoxLayout(self)
+
+        # table widget to display clients
+        self.table = QTableWidget(self)
+        self.table.setColumnCount(2)
+        self.table.setHorizontalHeaderLabels(["Name", "Email"])
+        layout.addWidget(self.table)
+
+        self.populate_table()
+
+    def populate_table(self):
+        try:
+            clients = self.database_manager.get_all_clients()
+            self.table.setRowCount(len(clients))
+
+            for row, client in enumerate(clients):
+                self.table.setItem(row, 0, QTableWidgetItem(client.name))
+                self.table.setItem(row, 1, QTableWidgetItem(client.email))
+        except RuntimeError as e:
+            QMessageBox.critical(self, "Error", str(e))
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -65,7 +95,13 @@ class MainWindow(QMainWindow):
         self.setGeometry(100, 100, window_width, window_height)
         self.setWindowIcon(QIcon(icon_path))
 
-        self.database_manager = DatabaseManager("sqlite:///pat_clients.db")
+        # initialize db
+        try:
+            self.database_manager = DatabaseManager("sqlite:///pat_clients.db")
+            self.db_connected = True
+        except Exception as e:
+            self.db_connected = False
+            QMessageBox.critical(self, "Database Error", f"Failed to connect to database: {e}")
 
         self.init_ui()
 
@@ -78,11 +114,20 @@ class MainWindow(QMainWindow):
         # Heading
         self._heading_label(layout)
 
+        # db connection status
+        if self.db_connected:
+            self.statusBar().showMessage("Connected to Database")
+        else:
+            self.statusBar().showMessage("Failed to Connect to Database")
+
         # Start button
-        self._start_button(layout)
+        # self._start_button(layout)
 
         # Add client button
         self._add_client_button(layout)
+
+        # View clients button
+        self._view_clients_button(layout)
 
     def _heading_label(self, layout):
         # Heading Label
@@ -97,22 +142,31 @@ class MainWindow(QMainWindow):
         label.setAlignment(Qt.AlignCenter)
         layout.addWidget(label)
 
-    def _start_button(self, layout):
-        self.button = QPushButton("Start", self)
-        self.button.clicked.connect(self._button_on_click)
-        layout.addWidget(self.button, alignment=Qt.AlignCenter)
+    # def _start_button(self, layout):
+    #     self.button = QPushButton("Start", self)
+    #     self.button.clicked.connect(self._button_on_click)
+    #     layout.addWidget(self.button, alignment=Qt.AlignCenter)
 
     def _add_client_button(self, layout):
         self.add_client_button = QPushButton("Add Client", self)
         self.add_client_button.clicked.connect(self._open_new_client_dialog)
         layout.addWidget(self.add_client_button, alignment=Qt.AlignCenter)
 
-    def _button_on_click(self):
-        QMessageBox.information(self, "Button Clicked", "Database initialized and ready!")
-        self.button.setText("Database Initialized")
+    # def _button_on_click(self):
+    #     QMessageBox.information(self, "Button Clicked", "Database initialized and ready!")
+    #     self.button.setText("Database Initialized")
+
+    def _view_clients_button(self, layout):
+        self.view_clients_button = QPushButton("View Clients", self)
+        self.view_clients_button.clicked.connect(self._open_view_clients_dialog)
+        layout.addWidget(self.view_clients_button, alignment=Qt.AlignCenter)
 
     def _open_new_client_dialog(self):
         dialog = NewClientDialog(self.database_manager, self)
+        dialog.exec_()
+
+    def _open_view_clients_dialog(self):
+        dialog = ViewClientsDialog(self.database_manager, self)
         dialog.exec_()
 
     def _menu(self):
