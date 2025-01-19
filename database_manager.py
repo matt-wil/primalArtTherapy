@@ -121,10 +121,17 @@ class DatabaseManager:
         except Exception as e:
             raise RuntimeError(f"Database initialization failed: {e}")
 
-    def add_client(self, name, email):
+    def add_client(self, first_name, last_name, email, phone_number, address, notes=None):
         session = self.Session()
         try:
-            client = Client(name=name, email=email)
+            client = Client(
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                phone_number=phone_number,
+                address=address,
+                notes=notes
+            )
             session.add(client)
             session.commit()
         except Exception as e:
@@ -133,14 +140,48 @@ class DatabaseManager:
         finally:
             session.close()
 
-    def delete_client(self):
-        pass
+    def search_clients(self, name=None, email=None, phone=None):
+        session = self.Session()
+        try:
+            query = session.query(Client)
+            if name:
+                query = query.filter((Client.first_name.like(f"%{name}%")) | (Client.last_name.like(f"%{name}%")))
+            if email:
+                query = query.filter(Client.email.like(f"%{email}%"))
+            if phone:
+                query = query.filter(Client.phone_number.like(f"%{phone}%"))
+            return query.all()
+        except Exception as e:
+            raise RuntimeError(f"Failed to search clients: {e}")
+        finally:
+            session.close()
+
+    def delete_client(self, client_id):
+        session = self.Session()
+        try:
+            client = session.query(Client).get(client_id)
+            if client:
+                session.delete(client)
+                session.commit()
+            else:
+                raise RuntimeError("Client not found.")
+        except Exception as e:
+            session.rollback()
+            raise RuntimeError(f"Failed to delete client: {e}")
+        finally:
+            session.close()
 
     def update_client(self):
         pass
 
-    def get_client(self):
-        pass
+    def get_client_by_details(self, first_name, last_name, email):
+        session = self.Session()
+        try:
+            return session.query(Client).filter_by(first_name=first_name, last_name=last_name, email=email).first()
+        except Exception as e:
+            raise RuntimeError(f"Failed to get client by details: {e}")
+        finally:
+            session.close()
 
     def get_all_clients(self):
         session = self.Session()
@@ -148,5 +189,22 @@ class DatabaseManager:
             return session.query(Client).all()
         except Exception as e:
             raise RuntimeError(f"Failed to fetch clients: {e}")
+        finally:
+            session.close()
+
+    def add_receipt(self, client_id, receipt_number, amount, date):
+        session = self.Session()
+        try:
+            receipt = SalesReceipt(
+                customer_id=client_id,
+                date=date,
+                total_amoint=float(amount),
+                description=f"Receipt #{receipt_number}"
+            )
+            session.add(receipt)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            raise RuntimeError(f"Failed to add receipt: {e}")
         finally:
             session.close()

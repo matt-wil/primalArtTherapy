@@ -28,8 +28,20 @@ class UpdateClientDialog(QDialog):
         layout = QFormLayout(self)
 
         # input fields
-        self.name_input = QLineEdit(self.client.name, self)
+        self.first_name_input = QLineEdit(self.client.first_name, self)
+        self.last_name_input = QLineEdit(self.client.last_name, self)
         self.email_input = QLineEdit(self.client.email, self)
+        self.phone_input = QLineEdit(self.client.phone_number, self)
+        self.address_input = QLineEdit(self.client.address, self)
+        self.notes_input = QLineEdit(self.client.notes, self)
+        self.receipts_input = QLineEdit(self.client.receipts, self)
+        layout.addRow("Vorname:", self.first_name_input)
+        layout.addRow("Nachname:", self.last_name_input)
+        layout.addRow("E-Mail:", self.email_input)
+        layout.addRow("Telefonnummer:", self.phone_input)
+        layout.addRow("Adresse:", self.address_input)
+        layout.addRow("Notizen:", self.notes_input)
+        layout.addRow("Rechnungen:", self.receipts_input)
 
         # dialog buttons
         self.buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
@@ -38,14 +50,19 @@ class UpdateClientDialog(QDialog):
         layout.addWidget(self.buttons)
 
     def accept(self):
-        name = self.name_input.text().strip()
+        first_name = self.first_name_input.text().strip()
+        last_name = self.last_name_input.text().strip()
         email = self.email_input.text().strip()
+        phone = self.phone_input.text().strip()
+        address = self.address_input.text().strip()
+        notes = self.notes_input.text().strip()
+        receipts = self.receipts_input.text().strip()
 
-        if not name or not email:
-            QMessageBox.Warning(self, "Input Error", "Please provide both name and email.")
+        if not first_name or not last_name or not email:
+            QMessageBox.warning(self, "Input Error", "Please provide both name and email.")
             return
         try:
-            self.database_manager.update_client(self.client.id, name, email)
+            self.database_manager.update_client(self.client.id, first_name, last_name, email, phone, address, notes, receipts)
             QMessageBox.information(self, "Success", "Client updated successfully!")
             super().accept()
         except RuntimeError as e:
@@ -174,15 +191,19 @@ class NewClientDialog(QDialog):
         layout.addWidget(self.buttons)
 
     def accept(self):
-        name = self.name_input.text().strip()
+        first_name = self.first_name_input.text().strip()
+        last_name = self.last_name_input.text().strip()
         email = self.email_input.text().strip()
+        phone_number = self.phone_number.text().strip()
+        address = self.address.text().strip()
+        notes = self.notes.text().strip()
 
-        if not name or not email:
+        if not first_name or not last_name or not email or not phone_number or not address:
             QMessageBox.warning(self, "Input Error", f"Client: {self.name} Email: {self.email} added successfully!")
             return
 
         try:
-            self.database_manager.add_client(name, email)
+            self.database_manager.add_client(first_name, last_name, email, phone_number, address, notes)
             QMessageBox.information(self, "Success", "Client added successfully!")
         except RuntimeError as e:
             QMessageBox.critical(self, "Error", str(e))
@@ -246,7 +267,7 @@ class ViewClientsDialog(QDialog):
     def delete_selected_client(self):
         client = self.get_selected_client()
         if client:
-            confirm = QMessageBox.question(self, "Confirm Delete", f"Are you sure you want to delete {client.name}?", QMessageBox.Yes | QMessageBox. No)
+            confirm = QMessageBox.question(self, "Confirm Delete", f"Are you sure you want to delete {client.first_name} {client.last_name}?", QMessageBox.Yes | QMessageBox.No)
             if confirm == QMessageBox.Yes:
                 try:
                     self.database_manager.delete_client(client.id)
