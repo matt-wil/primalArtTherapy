@@ -6,9 +6,9 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt
-from database_manager import DatabaseManager, Client
+from database_manager import DatabaseManager
 
-icon_path = "path"
+icon_path = "get a icon/logo to place the path in here and it will show on the top left of the Application Window"
 colors = {
     "Blue": "#134B42",
     "Gold": "#EEA83B",
@@ -221,8 +221,8 @@ class ViewClientsDialog(QDialog):
 
         # table widget to display clients
         self.table = QTableWidget(self)
-        self.table.setColumnCount(2)
-        self.table.setHorizontalHeaderLabels(["Name", "Email"])
+        self.table.setColumnCount(6)
+        self.table.setHorizontalHeaderLabels(["Vorname", "Nachname", "E-Mail", "Adresse", "Telefonnummer", "Notizen"])
         layout.addWidget(self.table)
 
         # update and del buttons
@@ -231,7 +231,7 @@ class ViewClientsDialog(QDialog):
         layout.addWidget(self.update_button)
 
         self.delete_button = QPushButton("Delete Selected Client", self)
-        self.delete_button.clicked.conect(self.delete_selected_client)
+        self.delete_button.clicked.connect(self.delete_selected_client)
         layout.addWidget(self.delete_button)
 
         self.populate_table()
@@ -242,8 +242,14 @@ class ViewClientsDialog(QDialog):
             self.table.setRowCount(len(clients))
 
             for row, client in enumerate(clients):
-                self.table.setItem(row, 0, QTableWidgetItem(client.name))
-                self.table.setItem(row, 1, QTableWidgetItem(client.email))
+                print(row, client.email)
+                self.table.setItem(row, 0, QTableWidgetItem(client.first_name))
+                self.table.setItem(row, 1, QTableWidgetItem(client.last_name))
+                self.table.setItem(row, 2, QTableWidgetItem(client.email))
+                self.table.setItem(row, 3, QTableWidgetItem(client.address))
+                self.table.setItem(row, 4, QTableWidgetItem(client.phone_number))
+                self.table.setItem(row, 5, QTableWidgetItem(client.notes or "empty"))
+
         except RuntimeError as e:
             QMessageBox.critical(self, "Error", str(e))
 
@@ -253,9 +259,18 @@ class ViewClientsDialog(QDialog):
             QMessageBox.warning(self, "Selection Error", "Please select a client first")
             return None
 
-        name = self.table.item(selected_row, 0).text()
-        email = self.table.item(selected_row, 1).text()
-        return self.database_manager.get_client_by_details(name, email)
+        first_name = self.table.item(selected_row, 0).text()
+        last_name = self.table.item(selected_row, 1).text()
+        email = self.table.item(selected_row, 2).text()
+        address = self.table.item(selected_row, 3).text()
+        phone = self.table.item(selected_row, 4).text()
+        notes = self.table.item(selected_row, 5).text()
+
+        if not all([first_name, last_name, email, address, phone, notes]):
+            QMessageBox.warning(self, "Selection Error", "One or more fields are missing for the selected client.")
+            return None
+
+        return self.database_manager.get_client_by_details(first_name, last_name, email, address, phone, notes)
 
     def update_selected_client(self):
         client = self.get_selected_client()
@@ -293,7 +308,7 @@ class MainWindow(QMainWindow):
 
         # initialize db
         try:
-            self.database_manager = DatabaseManager("sqlite:///pat_clients.db")
+            self.database_manager = DatabaseManager("sqlite:///PrimalArtDB.db")
             self.db_connected = True
         except Exception as e:
             self.db_connected = False

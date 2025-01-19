@@ -1,6 +1,6 @@
 # additionals
 playground.py
-pat_clients.db
+*.db
 
 # Byte-compiled / optimized / DLL files
 *.pyc

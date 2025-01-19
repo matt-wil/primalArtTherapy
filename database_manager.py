@@ -33,7 +33,7 @@ class Client(Base):
     last_name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)
     phone_number = Column(String, unique=True, nullable=False)
-    address = Column(String, unique=True, nullable=False)
+    address = Column(String, nullable=False)
     notes = Column(String)
     receipts = relationship("SalesReceipt", backref="client")
 
@@ -85,7 +85,7 @@ class SalesReceipt(Base):
 class Vendors(Base):
     __tablename__ = 'vendors'
 
-    id = Column(Integer, unique=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
     address = Column(String)
     contact_person = Column(String)
@@ -174,10 +174,10 @@ class DatabaseManager:
     def update_client(self):
         pass
 
-    def get_client_by_details(self, first_name, last_name, email):
+    def get_client_by_details(self, first_name, last_name, email, phone_number, address, notes):
         session = self.Session()
         try:
-            return session.query(Client).filter_by(first_name=first_name, last_name=last_name, email=email).first()
+            return session.query(Client).filter_by(first_name=first_name, last_name=last_name, email=email, phone_number=phone_number, address=address, notes=notes).first()
         except Exception as e:
             raise RuntimeError(f"Failed to get client by details: {e}")
         finally:
