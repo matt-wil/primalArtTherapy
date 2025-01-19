@@ -29,7 +29,7 @@ class Client(Base):
     __tablename__ = 'clients'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False)
+    first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=False)
     phone_number = Column(String, unique=True, nullable=False)
