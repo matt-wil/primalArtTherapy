@@ -342,11 +342,19 @@ class MainWindow(QMainWindow):
         # Search clients button
         self._search_clients_button(layout)
 
+        self.setStyleSheet("""
+            QPushButton{
+                border-radius: 5px;
+                background-color: #134B42;
+                border: 3px solid;
+                padding: 15px 50px;
+         }
+        """)
+
     def _heading_label(self, layout):
         # Heading Label
-        label = QLabel("Primal Art Therapy \nDatabase Manager", self)
-        label.setFont(QFont("Helvetica", 50))
-        label.setGeometry(0, 0, 600, 400)
+        label = QLabel("Primal Art Therapy", self)
+        label.setFont(QFont("Helvetica", 100))
         label.setStyleSheet(
             f"color: {colors['Gold']};"
             "font-weight: bold;"
