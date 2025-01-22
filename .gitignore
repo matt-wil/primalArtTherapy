@@ -1,5 +1,5 @@
 # additionals
-playground.py
+playground*.py
 *.db
 
 # Byte-compiled / optimized / DLL files

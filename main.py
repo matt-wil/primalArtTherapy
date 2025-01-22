@@ -1,14 +1,14 @@
 import sys
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QLabel, QWidget, QVBoxLayout, QPushButton,
-    QMessageBox, QDialog, QFormLayout, QLineEdit, QDialogButtonBox,
+    QMessageBox, QDialog, QFormLayout, QLineEdit, QDialogButtonBox, QHBoxLayout,
     QTableWidget, QTableWidgetItem
 )
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import Qt
 from database_manager import DatabaseManager
 
-icon_path = "get a icon/logo to place the path in here and it will show on the top left of the Application Window"
+icon_path = "Needs to be filled"
 colors = {
     "Blue": "#134B42",
     "Gold": "#EEA83B",
@@ -73,7 +73,7 @@ class SearchClientDialog(QDialog):
     # search via client name, email, address
     def __init__(self, database_manager, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Clienten Suchen")
+        self.setWindowTitle("Klienten Suchen")
         self.database_manager = database_manager
         self.init_ui()
 
@@ -162,7 +162,7 @@ class AddReceiptDialog(QDialog):
 class NewClientDialog(QDialog):
     def __init__(self, database_manager, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Neuen Clienten Hinzufügen")
+        self.setWindowTitle("Neuen Klienten Hinzufügen")
         self.database_manager = database_manager
         self.init_ui()
 
@@ -242,7 +242,6 @@ class ViewClientsDialog(QDialog):
             self.table.setRowCount(len(clients))
 
             for row, client in enumerate(clients):
-                print(row, client.email)
                 self.table.setItem(row, 0, QTableWidgetItem(client.first_name))
                 self.table.setItem(row, 1, QTableWidgetItem(client.last_name))
                 self.table.setItem(row, 2, QTableWidgetItem(client.email))
@@ -296,6 +295,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Primal Art Therapy")
+
         # Dimensions
         screen = QApplication.primaryScreen()
         screen_width, screen_height = screen.size().width(), screen.size().height()
@@ -304,7 +304,7 @@ class MainWindow(QMainWindow):
         window_height = int(screen_height * 0.6)
 
         self.setGeometry(100, 100, window_width, window_height)
-        self.setWindowIcon(QIcon(icon_path))
+        self.setWindowIcon(QIcon(icon_path))  # still need an Icon
 
         # initialize db
         try:
@@ -342,12 +342,13 @@ class MainWindow(QMainWindow):
         # Search clients button
         self._search_clients_button(layout)
 
+        # Set Styles Via CSS
         self.setStyleSheet("""
             QPushButton{
                 border-radius: 5px;
                 background-color: #134B42;
                 border: 3px solid;
-                padding: 15px 50px;
+                padding: 10px 50px;
          }
         """)
 
@@ -358,10 +359,17 @@ class MainWindow(QMainWindow):
         label.setStyleSheet(
             f"color: {colors['Gold']};"
             "font-weight: bold;"
-            "font-style: italic;"
         )
         label.setAlignment(Qt.AlignCenter)
+        label2 = QLabel("Business Management Application", self)
+        label2.setFont(QFont("Helvetica", 30))
+        label2.setStyleSheet(
+            f"color: {colors['Gold']};"
+            "font-style: italic;"
+        )
+        label2.setAlignment(Qt.AlignCenter)
         layout.addWidget(label)
+        layout.addWidget(label2)
 
     def _add_client_button(self, layout):
         self.add_client_button = QPushButton("Add Client", self)
